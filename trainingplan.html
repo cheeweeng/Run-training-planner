@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunTogether - Training Plans</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .workout-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .workout-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .workout-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .workout-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .workout-detail {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .workout-detail strong {
+            display: block;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .plan-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .plan-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .plan-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .plan-stat {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .plan-stat strong {
+            display: block;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .share-code {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            border: 2px dashed #667eea;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .workout-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .workout-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .plan-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group input[type="date"] {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏃‍♂️ RunTogether</h1>
+            <p>Create, share, and track your running training plans</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('create')">Create Plan</button>
+            <button class="nav-tab" onclick="showTab('myplans')">My Plans</button>
+            <button class="nav-tab" onclick="showTab('shared')">Shared Plans</button>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            <span id="successText"></span>
+        </div>
+
+        <!-- Create Plan Section -->
+        <div id="create" class="content-section active">
+            <div class="card">
+                <h2>Create New Training Plan</h2>
+                <form id="planForm">
+                    <div class="form-group">
+                        <label for="planName">Plan Name</label>
+                        <input type="text" id="planName" required placeholder="e.g., 5K Training Program">
+                    </div>
+                    <div class="form-group">
+                        <label for="planDescription">Description</label>
+                        <textarea id="planDescription" rows="3" placeholder="Brief description of your training plan"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="planDuration">Duration (weeks)</label>
+                        <select id="planDuration">
+                            <option value="4">4 weeks</option>
+                            <option value="6">6 weeks</option>
+                            <option value="8">8 weeks</option>
+                            <option value="12">12 weeks</option>
+                            <option value="16">16 weeks</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="planLevel">Difficulty Level</label>
+                        <select id="planLevel">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Create Plan</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Workouts</h3>
+                <div id="workoutsList">
+                    <div class="empty-state">
+                        <h3>No workouts yet</h3>
+                        <p>Click the + button to add your first workout</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Plans Section -->
+        <div id="myplans" class="content-section">
+            <div class="card">
+                <input type="text" class="search-bar" placeholder="Search your plans..." onkeyup="searchPlans(this.value, 'myplans')">
+                <div id="myPlansList">
+                    <div class="empty-state">
+                        <h3>No plans created yet</h3>
+                        <p>Start by creating your first training plan!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shared Plans Section -->
+        <div id="shared" class="content-section">
+            <div class="card">
+                <h3>Import Shared Plan</h3>
+                <div class="form-group">
+                    <label for="shareCode">Share Code</label>
+                    <input type="text" id="shareCode" placeholder="Enter share code from teammate">
+                </div>
+                <button class="btn btn-secondary" onclick="importSharedPlan()">Import Plan</button>
+            </div>
+            
+            <div class="card">
+                <input type="text" class="search-bar" placeholder="Search shared plans..." onkeyup="searchPlans(this.value, 'shared')">
+                <div id="sharedPlansList">
+                    <div class="empty-state">
+                        <h3>No shared plans yet</h3>
+                        <p>Import plans from teammates using their share codes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button class="floating-btn" onclick="showWorkoutModal()">+</button>
+
+    <!-- Workout Modal -->
+    <div id="workoutModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="hideWorkoutModal()">&times;</button>
+            <h3>Add New Workout</h3>
+            <form id="workoutForm" class="workout-form">
+                <div class="form-group">
+                    <label for="workoutName">Workout Name</label>
+                    <input type="text" id="workoutName" required placeholder="e.g., Easy Run">
+                </div>
+                <div class="form-group">
+                    <label for="workoutType">Type</label>
+                    <select id="workoutType">
+                        <option value="easy">Easy Run</option>
+                        <option value="tempo">Tempo Run</option>
+                        <option value="interval">Interval Training</option>
+                        <option value="long">Long Run</option>
+                        <option value="recovery">Recovery Run</option>
+                        <option value="speed">Speed Work</option>
+                        <option value="hill">Hill Training</option>
+                        <option value="rest">Rest Day</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="workoutDistance">Distance</label>
+                    <input type="text" id="workoutDistance" placeholder="e.g., 5km, 30 minutes">
+                </div>
+                <div class="form-group">
+                    <label for="workoutPace">Target Pace</label>
+                    <input type="text" id="workoutPace" placeholder="e.g., 5:30/km, Easy effort">
+                </div>
+                <div class="form-group">
+                    <label for="workoutNotes">Notes</label>
+                    <textarea id="workoutNotes" rows="3" placeholder="Additional instructions or notes"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="workoutDate">📅 Workout Date</label>
+                    <input type="date" id="workoutDate" required>
+                </div>
+                <button type="submit" class="btn btn-success">Add Workout</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // App state
+        let currentPlan = null;
+        let currentWorkouts = [];
+        let allPlans = [];
+        let sharedPlans = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('planForm').addEventListener('submit', createPlan);
+            document.getElementById('workoutForm').addEventListener('submit', addWorkout);
+        }
+
+        function showTab(tabName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected section and activate tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Update floating button visibility
+            const floatingBtn = document.querySelector('.floating-btn');
+            if (tabName === 'create') {
+                floatingBtn.style.display = 'block';
+            } else {
+                floatingBtn.style.display = 'none';
+            }
+        }
+
+        function createPlan(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('planName').value;
+            const description = document.getElementById('planDescription').value;
+            const duration = document.getElementById('planDuration').value;
+            const level = document.getElementById('planLevel').value;
+
+            currentPlan = {
+                id: Date.now(),
+                name,
+                description,
+                duration: parseInt(duration),
+                level,
+                workouts: [...currentWorkouts],
+                created: new Date().toISOString(),
+                shareCode: generateShareCode()
+            };
+
+            allPlans.push(currentPlan);
+            saveData();
+            
+            showSuccess('Training plan created successfully!');
+            document.getElementById('planForm').reset();
+            currentWorkouts = [];
+            renderWorkouts();
+            renderMyPlans();
+        }
+
+        function addWorkout(e) {
+            e.preventDefault();
+            
+            const workout = {
+                id: Date.now(),
+                name: document.getElementById('workoutName').value,
+                type: document.getElementById('workoutType').value,
+                distance: document.getElementById('workoutDistance').value,
+                pace: document.getElementById('workoutPace').value,
+                notes: document.getElementById('workoutNotes').value,
+                date: document.getElementById('workoutDate').value
+            };
+
+            currentWorkouts.push(workout);
+            document.getElementById('workoutForm').reset();
+            hideWorkoutModal();
+            renderWorkouts();
+            showSuccess('Workout added successfully!');
+        }
+
+        function renderWorkouts() {
+            const container = document.getElementById('workoutsList');
+            
+            if (currentWorkouts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No workouts yet</h3>
+                        <p>Click the + button to add your first workout</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort workouts by date
+            const sortedWorkouts = [...currentWorkouts].sort((a, b) => {
+                return new Date(a.date) - new Date(b.date);
+            });
+
+            container.innerHTML = sortedWorkouts.map(workout => `
+                <div class="workout-item">
+                    <button class="delete-btn" onclick="deleteWorkout(${workout.id})">&times;</button>
+                    <h4>${workout.name}</h4>
+                    <div class="workout-details">
+                        <div class="workout-detail">
+                            <strong>Type</strong>
+                            ${workout.type.charAt(0).toUpperCase() + workout.type.slice(1)}
+                        </div>
+                        <div class="workout-detail">
+                            <strong>Distance</strong>
+                            ${workout.distance}
+                        </div>
+                        <div class="workout-detail">
+                            <strong>Pace</strong>
+                            ${workout.pace}
+                        </div>
+                        <div class="workout-detail">
+                            <strong>Date</strong>
+                            ${new Date(workout.date).toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            })}
+                        </div>
+                    </div>
+                    ${workout.notes ? `<p><strong>Notes:</strong> ${workout.notes}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderMyPlans() {
+            const container = document.getElementById('myPlansList');
+            
+            if (allPlans.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No plans created yet</h3>
+                        <p>Start by creating your first training plan!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allPlans.map(plan => `
+                <div class="plan-item">
+                    <div class="plan-header">
+                        <div class="plan-title">${plan.name}</div>
+                        <button class="delete-btn" onclick="deletePlan(${plan.id})">&times;</button>
+                    </div>
+                    <p>${plan.description}</p>
+                    <div class="plan-meta">
+                        <div class="plan-stat">
+                            <strong>Duration</strong>
+                            ${plan.duration} weeks
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Level</strong>
+                            ${plan.level.charAt(0).toUpperCase() + plan.level.slice(1)}
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Workouts</strong>
+                            ${plan.workouts.length}
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Created</strong>
+                            ${new Date(plan.created).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="share-code">
+                        <strong>Share Code:</strong> ${plan.shareCode}
+                        <button class="btn btn-secondary" onclick="copyShareCode('${plan.shareCode}')" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Copy Code</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSharedPlans() {
+            const container = document.getElementById('sharedPlansList');
+            
+            if (sharedPlans.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No shared plans yet</h3>
+                        <p>Import plans from teammates using their share codes</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = sharedPlans.map(plan => `
+                <div class="plan-item">
+                    <div class="plan-header">
+                        <div class="plan-title">${plan.name}</div>
+                        <button class="delete-btn" onclick="deleteSharedPlan(${plan.id})">&times;</button>
+                    </div>
+                    <p>${plan.description}</p>
+                    <div class="plan-meta">
+                        <div class="plan-stat">
+                            <strong>Duration</strong>
+                            ${plan.duration} weeks
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Level</strong>
+                            ${plan.level.charAt(0).toUpperCase() + plan.level.slice(1)}
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Workouts</strong>
+                            ${plan.workouts.length}
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Imported</strong>
+                            ${new Date(plan.imported).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="viewPlanDetails(${plan.id}, true)" style="margin-top: 15px;">View Workouts</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteWorkout(workoutId) {
+            if (confirm('Are you sure you want to delete this workout?')) {
+                currentWorkouts = currentWorkouts.filter(w => w.id !== workoutId);
+                renderWorkouts();
+                showSuccess('Workout deleted successfully!');
+            }
+        }
+
+        function deletePlan(planId) {
+            if (confirm('Are you sure you want to delete this plan?')) {
+                allPlans = allPlans.filter(p => p.id !== planId);
+                saveData();
+                renderMyPlans();
+                showSuccess('Plan deleted successfully!');
+            }
+        }
+
+        function deleteSharedPlan(planId) {
+            if (confirm('Are you sure you want to remove this shared plan?')) {
+                sharedPlans = sharedPlans.filter(p => p.id !== planId);
+                saveData();
+                renderSharedPlans();
+                showSuccess('Shared plan removed successfully!');
+            }
+        }
+
+        function showWorkoutModal() {
+            document.getElementById('workoutModal').classList.add('active');
+        }
+
+        function hideWorkoutModal() {
+            document.getElementById('workoutModal').classList.remove('active');
+        }
+
+        function generateShareCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function copyShareCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showSuccess('Share code copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccess('Share code copied to clipboard!');
+            });
+        }
+
+        function importSharedPlan() {
+            const shareCode = document.getElementById('shareCode').value.trim().toUpperCase();
+            
+            if (!shareCode) {
+                alert('Please enter a share code');
+                return;
+            }
+
+            // Find plan with matching share code
+            const planToImport = allPlans.find(p => p.shareCode === shareCode);
+            
+            if (!planToImport) {
+                alert('Plan not found. Please check the share code and try again.');
+                return;
+            }
+
+            // Check if already imported
+            const alreadyImported = sharedPlans.find(p => p.shareCode === shareCode);
+            if (alreadyImported) {
+                alert('This plan has already been imported.');
+                return;
+            }
+
+            // Create imported plan
+            const importedPlan = {
+                ...planToImport,
+                id: Date.now(),
+                imported: new Date().toISOString()
+            };
+
+            sharedPlans.push(importedPlan);
+            saveData();
+            renderSharedPlans();
+            document.getElementById('shareCode').value = '';
+            showSuccess('Plan imported successfully!');
+        }
+
+        function viewPlanDetails(planId, isShared = false) {
+            const plan = isShared ? 
+                sharedPlans.find(p => p.id === planId) : 
+                allPlans.find(p => p.id === planId);
+            
+            if (!plan) return;
+
+            // Create modal for plan details
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+                    <h3>${plan.name}</h3>
+                    <p>${plan.description}</p>
+                    <div class="plan-meta">
+                        <div class="plan-stat">
+                            <strong>Duration</strong>
+                            ${plan.duration} weeks
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Level</strong>
+                            ${plan.level.charAt(0).toUpperCase() + plan.level.slice(1)}
+                        </div>
+                        <div class="plan-stat">
+                            <strong>Total Workouts</strong>
+                            ${plan.workouts.length}
+                        </div>
+                    </div>
+                    <h4>Workouts</h4>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${plan.workouts.map(workout => `
+                            <div class="workout-item">
+                                <h4>${workout.name}</h4>
+                                <div class="workout-details">
+                                    <div class="workout-detail">
+                                        <strong>Type</strong>
+                                        ${workout.type.charAt(0).toUpperCase() + workout.type.slice(1)}
+                                    </div>
+                                    <div class="workout-detail">
+                                        <strong>Distance</strong>
+                                        ${workout.distance}
+                                    </div>
+                                    <div class="workout-detail">
+                                        <strong>Pace</strong>
+                                        ${workout.pace}
+                                    </div>
+                                    <div class="workout-detail">
+                                        <strong>Date</strong>
+                                        ${new Date(workout.date).toLocaleDateString('en-US', { 
+                                            weekday: 'short', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        })}
+                                    </div>
+                                </div>
+                                ${workout.notes ? `<p><strong>Notes:</strong> ${workout.notes}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function searchPlans(query, section) {
+            const plans = section === 'myplans' ? allPlans : sharedPlans;
+            const filteredPlans = plans.filter(plan => 
+                plan.name.toLowerCase().includes(query.toLowerCase()) ||
+                plan.description.toLowerCase().includes(query.toLowerCase()) ||
+                plan.level.toLowerCase().includes(query.toLowerCase())
+            );
+
+            // Temporarily update the plans array for rendering
+            if (section === 'myplans') {
+                const originalPlans = [...allPlans];
+                allPlans.length = 0;
+                allPlans.push(...filteredPlans);
+                renderMyPlans();
+                setTimeout(() => {
+                    allPlans.length = 0;
+                    allPlans.push(...originalPlans);
+                }, 0);
+            } else {
+                const originalPlans = [...sharedPlans];
+                sharedPlans.length = 0;
+                sharedPlans.push(...filteredPlans);
+                renderSharedPlans();
+                setTimeout(() => {
+                    sharedPlans.length = 0;
+                    sharedPlans.push(...originalPlans);
+                }, 0);
+            }
+        }
+
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            const successText = document.getElementById('successText');
+            
+            successText.textContent = message;
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveData() {
+            const data = {
+                allPlans,
+                sharedPlans,
+                currentWorkouts,
+                currentPlan
+            };
+            // In a real app, this would save to a database
+            // For demo purposes, we'll use localStorage-like behavior in memory
+            window.appData = data;
+        }
+
+        function loadData() {
+            // In a real app, this would load from a database
+            // For demo purposes, we'll use memory storage
+            if (window.appData) {
+                const data = window.appData;
+                allPlans = data.allPlans || [];
+                sharedPlans = data.sharedPlans || [];
+                currentWorkouts = data.currentWorkouts || [];
+                currentPlan = data.currentPlan || null;
+            }
+            
+            renderWorkouts();
+            renderMyPlans();
+            renderSharedPlans();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.remove();
+            }
+        });
+
+        // Initialize with sample data for demo
+        setTimeout(() => {
+            if (allPlans.length === 0) {
+                // Add sample plans for demonstration
+                const samplePlan = {
+                    id: 1,
+                    name: "Beginner 5K Program",
+                    description: "A gentle introduction to running with a 5K goal",
+                    duration: 8,
+                    level: "beginner",
+                    workouts: [
+                        {
+                            id: 1,
+                            name: "Easy Walk/Jog",
+                            type: "easy",
+                            distance: "2km",
+                            pace: "Comfortable",
+                            notes: "Alternate walking and jogging",
+                            date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Tomorrow
+                        },
+                        {
+                            id: 2,
+                            name: "Recovery Walk",
+                            type: "recovery",
+                            distance: "1.5km",
+                            pace: "Easy walk",
+                            notes: "Focus on recovery",
+                            date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 3 days from now
+                        }
+                    ],
+                    created: new Date().toISOString(),
+                    shareCode: "ABC123"
+                };
+
+                allPlans.push(samplePlan);
+                saveData();
+                renderMyPlans();
+            }
+        }, 500);
+
+        // Service Worker for offline functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                const swScript = `
+                    const CACHE_NAME = 'runtogether-v1';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html'
+                    ];
+
+                    self.addEventListener('install', function(event) {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(function(cache) {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+
+                    self.addEventListener('fetch', function(event) {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(function(response) {
+                                    if (response) {
+                                        return response;
+                                    }
+                                    return fetch(event.request);
+                                }
+                            )
+                        );
+                    });
+                `;
+
+                const blob = new Blob([swScript], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
